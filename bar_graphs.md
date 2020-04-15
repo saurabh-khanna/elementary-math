@@ -1,25 +1,21 @@
----
-title: Bar graphs for observed lessons
-author: Saurabh Khanna 
-date: "`r Sys.Date()`"
-output: 
-  github_document:
-    toc: true
----
+Bar graphs for observed lessons
+================
+Saurabh Khanna
+2020-04-14
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
-```
+  - [Bar graphs](#bar-graphs)
+      - [Percentage](#percentage)
 
-```{r message=FALSE, warning=FALSE}
+``` r
 # Libraries
 library(tidyverse)
 ```
 
 # Bar graphs
+
 ## Percentage
 
-```{r}
+``` r
 tribble(
   ~school, ~teacher, ~act,           ~time,
   "S2",    "T1",     "Launch",       15,
@@ -32,7 +28,6 @@ tribble(
   ggplot(aes(teacher, time, fill = act)) +
   geom_col(position = "stack") +
   coord_flip()
-
 ```
 
-
+![](bar_graphs_files/figure-gfm/unnamed-chunk-2-1.png)<!-- -->
