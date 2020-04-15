@@ -1,0 +1,38 @@
+---
+title: Bar graphs for observed lessons
+author: Saurabh Khanna 
+date: "`r Sys.Date()`"
+output: 
+  github_document:
+    toc: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r message=FALSE, warning=FALSE}
+# Libraries
+library(tidyverse)
+```
+
+## S2
+### T1
+
+```{r}
+tribble(
+  ~school, ~teacher, ~act,           ~time,
+  "S2",    "T1",     "Launch",       15,
+  "S2",    "T1",     "Student work", 15,
+  "S2",    "T1",     "Discussion",   5
+) %>% 
+  mutate(
+    act = act %>% fct_inorder() %>% fct_rev()
+  ) %>% 
+  ggplot(aes(teacher, time, fill = act)) +
+  geom_col(position = "stack") +
+  coord_flip()
+
+```
+
+
