@@ -4,7 +4,9 @@ Saurabh Khanna
 2020-04-14
 
   - [Bar graphs](#bar-graphs)
-      - [Percentage](#percentage)
+      - [Reading in data](#reading-in-data)
+      - [Graphs by percentage duration](#graphs-by-percentage-duration)
+      - [Graphs by total duration](#graphs-by-total-duration)
 
 ``` r
 # Libraries
@@ -13,26 +15,57 @@ library(tidyverse)
 
 # Bar graphs
 
-## Percentage
+## Reading in data
 
 ``` r
-tribble(
-  ~school, ~teacher, ~act,                   ~time,
-  "S2",    "T1",     "Warm up",              9,
-  "S2",    "T1",     "Lesson launch",        6,
-  "S2",    "T1",     "Transition to tables", 3,
-  "S2",    "T1",     "Student group work",   15,
-  "S2",    "T1",     "Transition to rug",    1,
-  "S2",    "T1",     "Discussion",           5
-) %>%
-  group_by(school, teacher) %>% 
+df <-
+  tribble(
+    ~school, ~teacher, ~act,                   ~time,
+    
+    "S1",    "T1",     "Warm up",              4,
+    "S1",    "T1",     "Lesson launch",        9,
+    "S1",    "T1",     "Student group work",   24,
+    "S1",    "T1",     "Class discussion",     5,
+    "S1",    "T1",     "Transitions",          3,
+    
+    "S1",    "T2",     "Warm up",              2,
+    "S1",    "T2",     "Lesson launch",        8,
+    "S1",    "T2",     "Student group work",   20,
+    "S1",    "T2",     "Class discussion",     13,
+    "S1",    "T2",     "Transitions",          1,
+    
+    "S2",    "T1",     "Warm up",              9,
+    "S2",    "T1",     "Lesson launch",        6,
+    "S2",    "T1",     "Student group work",   15,
+    "S2",    "T1",     "Class discussion",     5,  
+    "S2",    "T1",     "Transitions",          7,
+    
+    "S3",    "T2",     "Warm up",              12,
+    "S3",    "T2",     "Lesson launch",        11,
+    "S3",    "T2",     "Student group work",   17,
+    "S3",    "T2",     "Class discussion",     20,
+    "S3",    "T2",     "Transitions",          4,
+    
+    "S3",    "T7",     "Warm up",              9,
+    "S3",    "T7",     "Lesson launch",        10,
+    "S3",    "T7",     "Student group work",   23,
+    "S3",    "T7",     "Class discussion",     29,
+    "S3",    "T7",     "Transitions",          4
+  ) %>%
+  mutate(
+    act = act %>% fct_inorder() %>% fct_rev()
+  )
+```
+
+## Graphs by percentage duration
+
+``` r
+df %>%
+  group_by(school, teacher) %>%
   mutate(
    time = time / sum(time)
   ) %>%
-  ungroup %>% 
-  mutate(
-    act = act %>% fct_inorder() %>% fct_rev()
-  ) %>% 
+  ungroup %>%
   ggplot(aes(teacher, time, fill = act)) +
   geom_col(position = "stack", color = "black") +
   scale_y_continuous(
@@ -42,7 +75,9 @@ tribble(
   ) +
   scale_fill_viridis_d() +
   guides(fill = guide_legend(reverse = T)) +
+  theme_bw() +
   coord_flip() +
+  facet_grid(vars(school), scales = "free_y") +
   labs(
     x = "Teacher",
     y = "Duration (%)",
@@ -50,4 +85,27 @@ tribble(
   )
 ```
 
-![](bar_graphs_files/figure-gfm/unnamed-chunk-2-1.png)<!-- -->
+![](bar_graphs_files/figure-gfm/unnamed-chunk-3-1.png)<!-- -->
+
+## Graphs by total duration
+
+``` r
+df %>% 
+  ggplot(aes(teacher, time, fill = act)) +
+  geom_col(position = "stack", color = "black") +
+  scale_fill_viridis_d() +
+  guides(fill = guide_legend(reverse = T)) +
+  scale_y_continuous(
+    breaks = seq(0, 80, 10)
+  ) +
+  coord_flip() +
+  theme_bw() +
+  facet_grid(vars(school), scales = "free_y") +
+  labs(
+    x = "Teacher",
+    y = "Duration (minutes)",
+    fill = "Activity"
+  )
+```
+
+![](bar_graphs_files/figure-gfm/unnamed-chunk-4-1.png)<!-- -->
