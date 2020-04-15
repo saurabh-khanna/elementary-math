@@ -55,7 +55,8 @@ df <-
     "S3",    "T7",     "Transitions",          4
   ) %>%
   mutate(
-    act = act %>% fct_inorder() %>% fct_rev()
+    act = act %>% fct_inorder() %>% fct_rev(),
+    teacher = teacher %>% fct_inorder() %>% fct_rev()
   )
 ```
 
