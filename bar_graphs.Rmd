@@ -36,10 +36,10 @@ df <-
     "S1",    "T2",     "Class discussion",     13,
     "S1",    "T2",     "Transitions",          1,
     
-    "S2",    "T1",     "Warm up",              9,
-    "S2",    "T1",     "Lesson launch",        6,
-    "S2",    "T1",     "Student group work",   15,
-    "S2",    "T1",     "Class discussion",     5,  
+    "S2",    "T1",     "Warm up",              8,
+    "S2",    "T1",     "Lesson launch",        5,
+    "S2",    "T1",     "Student group work",   14,
+    "S2",    "T1",     "Class discussion",     4,  
     "S2",    "T1",     "Transitions",          7,
     
     "S3",    "T2",     "Warm up",              12,
