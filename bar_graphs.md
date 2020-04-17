@@ -1,9 +1,9 @@
-Bar graphs for observed lessons
+Time charts for observed lessons
 ================
 Saurabh Khanna
-2020-04-14
+2020-04-17
 
-  - [Bar graphs](#bar-graphs)
+  - [Time charts](#time-charts)
       - [Reading in data](#reading-in-data)
       - [Graphs by percentage duration](#graphs-by-percentage-duration)
       - [Graphs by total duration](#graphs-by-total-duration)
@@ -13,7 +13,7 @@ Saurabh Khanna
 library(tidyverse)
 ```
 
-# Bar graphs
+# Time charts
 
 ## Reading in data
 

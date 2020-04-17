@@ -1,5 +1,5 @@
 ---
-title: Bar graphs for observed lessons
+title: Time charts for observed lessons
 author: Saurabh Khanna 
 date: "`r Sys.Date()`"
 output: 
@@ -16,7 +16,7 @@ knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
 ```
 
-# Bar graphs
+# Time charts
 ## Reading in data
 
 ```{r}
