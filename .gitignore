@@ -3,5 +3,7 @@ data/
 *.Rproj
 *.csv
 *.xlsx
+*.txt
+*.png
 *.docx
 *.pdf

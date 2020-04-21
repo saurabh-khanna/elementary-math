@@ -1,7 +1,7 @@
 Time charts for observed lessons
 ================
 Saurabh Khanna
-2020-04-17
+2020-04-21
 
   - [Time charts](#time-charts)
       - [Reading in data](#reading-in-data)
@@ -11,6 +11,7 @@ Saurabh Khanna
 ``` r
 # Libraries
 library(tidyverse)
+library(readxl)
 ```
 
 # Time charts
@@ -20,38 +21,42 @@ library(tidyverse)
 ``` r
 df <-
   tribble(
-    ~school, ~teacher, ~act,                   ~time,
+    ~school, ~teacher, ~act,                     ~time,
     
-    "S1",    "T1",     "Warm up",              4,
-    "S1",    "T1",     "Lesson launch",        9,
-    "S1",    "T1",     "Student group work",   24,
-    "S1",    "T1",     "Class discussion",     5,
-    "S1",    "T1",     "Transitions",          3,
+    "S1",    "T1",     "Warm-up",                4,
+    "S1",    "T1",     "Launch",                 9,
+    "S1",    "T1",     "Work-time (individual)", 24,
+    "S1",    "T1",     "Whole-class discussion", 5,
+    "S1",    "T1",     "Transitions",             3,
     
-    "S1",    "T2",     "Warm up",              2,
-    "S1",    "T2",     "Lesson launch",        8,
-    "S1",    "T2",     "Student group work",   20,
-    "S1",    "T2",     "Class discussion",     13,
-    "S1",    "T2",     "Transitions",          1,
+    "S1",    "T2",     "Warm-up",                2,
+    "S1",    "T2",     "Launch",                 8,
+    "S1",    "T2",     "Work-time (pairs)",      20,
+    "S1",    "T2",     "Whole-class discussion", 13,
+    "S1",    "T2",     "Transitions",             1,
     
-    "S2",    "T1",     "Warm up",              8,
-    "S2",    "T1",     "Lesson launch",        5,
-    "S2",    "T1",     "Student group work",   14,
-    "S2",    "T1",     "Class discussion",     4,  
-    "S2",    "T1",     "Transitions",          7,
+    "S2",    "T1",     "Warm-up",                8,
+    "S2",    "T1",     "Launch",                 5,
+    "S2",    "T1",     "Work-time (pairs)",      14,
+    "S2",    "T1",     "Whole-class discussion", 4,  
+    "S2",    "T1",     "Transitions",             7,
     
-    "S3",    "T2",     "Warm up",              12,
-    "S3",    "T2",     "Lesson launch",        11,
-    "S3",    "T2",     "Student group work",   17,
-    "S3",    "T2",     "Class discussion",     20,
-    "S3",    "T2",     "Transitions",          4,
+    "S3",    "T2",     "Warm-up",                12,
+    "S3",    "T2",     "Launch",                 11,
+    "S3",    "T2",     "Work-time (pairs)",      17,
+    "S3",    "T2",     "Whole-class discussion", 20,
+    "S3",    "T2",     "Transitions",             4,
     
-    "S3",    "T7",     "Warm up",              9,
-    "S3",    "T7",     "Lesson launch",        10,
-    "S3",    "T7",     "Student group work",   23,
-    "S3",    "T7",     "Class discussion",     29,
-    "S3",    "T7",     "Transitions",          4
+    "S3",    "T7",     "Warm-up",                9,
+    "S3",    "T7",     "Launch",                 10,
+    "S3",    "T7",     "Work-time (individual)", 23,
+    "S3",    "T7",     "Whole-class discussion", 29,
+    "S3",    "T7",     "Transitions",             4
   ) %>%
+  bind_rows(
+    read_xlsx("data/ml_data.xlsx")
+  ) %>%
+  arrange(school, teacher) %>%
   mutate(
     act = act %>% fct_inorder() %>% fct_rev(),
     teacher = teacher %>% fct_inorder() %>% fct_rev()
