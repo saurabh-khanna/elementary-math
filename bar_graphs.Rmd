@@ -142,6 +142,7 @@ df %>%
   scale_fill_brewer(palette = "Set2") +
   guides(fill = guide_legend(reverse = T)) +
   theme_bw() +
+  theme(legend.position = "bottom") +
   coord_flip() +
   labs(
     x = "Curriculum",
