@@ -1,12 +1,13 @@
 Time charts for observed lessons
 ================
 Saurabh Khanna
-2020-04-21
+2020-04-22
 
   - [Time charts](#time-charts)
       - [Reading in data](#reading-in-data)
       - [Graphs by percentage duration](#graphs-by-percentage-duration)
       - [Graphs by total duration](#graphs-by-total-duration)
+      - [SFUSD and JM](#sfusd-and-jm)
 
 ``` r
 # Libraries
@@ -59,7 +60,8 @@ df <-
   arrange(school, teacher) %>%
   mutate(
     act = act %>% fct_inorder() %>% fct_rev(),
-    teacher = teacher %>% fct_inorder() %>% fct_rev()
+    teacher = teacher %>% fct_inorder() %>% fct_rev(),
+    curriculum = if_else(school == "S3", "Japan Math", "SFUSD")
   )
 ```
 
@@ -79,7 +81,7 @@ df %>%
     minor_breaks = NULL,
     labels = scales::percent_format(accuracy = 1)
   ) +
-  scale_fill_viridis_d() +
+  scale_fill_brewer(palette = "Set2") +
   guides(fill = guide_legend(reverse = T)) +
   theme_bw() +
   coord_flip() +
@@ -99,7 +101,7 @@ df %>%
 df %>% 
   ggplot(aes(teacher, time, fill = act)) +
   geom_col(position = "stack", color = "black") +
-  scale_fill_viridis_d() +
+  scale_fill_brewer(palette = "Set2") +
   guides(fill = guide_legend(reverse = T)) +
   scale_y_continuous(
     breaks = seq(0, 80, 10)
@@ -115,3 +117,35 @@ df %>%
 ```
 
 ![](bar_graphs_files/figure-gfm/unnamed-chunk-4-1.png)<!-- -->
+
+## SFUSD and JM
+
+``` r
+df %>% 
+  group_by(curriculum, act) %>% 
+  summarize(
+    time_mean = mean(time)
+  ) %>% 
+  mutate(
+    time_perc = time_mean / sum(time_mean)
+  ) %>% 
+  ungroup() %>% 
+  ggplot(aes(curriculum, time_perc, fill = act)) +
+  geom_col(position = "stack", color = "black") +
+  scale_y_continuous(
+    breaks = seq(0, 1, 0.2),
+    minor_breaks = NULL,
+    labels = scales::percent_format(accuracy = 1)
+  ) +
+  scale_fill_brewer(palette = "Set2") +
+  guides(fill = guide_legend(reverse = T)) +
+  theme_bw() +
+  coord_flip() +
+  labs(
+    x = "Curriculum",
+    y = "Duration (%)",
+    fill = "Activity"
+  )
+```
+
+![](bar_graphs_files/figure-gfm/unnamed-chunk-5-1.png)<!-- -->

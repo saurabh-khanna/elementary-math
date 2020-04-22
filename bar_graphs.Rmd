@@ -61,9 +61,11 @@ df <-
   arrange(school, teacher) %>%
   mutate(
     act = act %>% fct_inorder() %>% fct_rev(),
-    teacher = teacher %>% fct_inorder() %>% fct_rev()
+    teacher = teacher %>% fct_inorder() %>% fct_rev(),
+    curriculum = if_else(school == "S3", "Japan Math", "SFUSD")
   )
 ```
+
 
 
 ## Graphs by percentage duration
@@ -82,7 +84,7 @@ df %>%
     minor_breaks = NULL,
     labels = scales::percent_format(accuracy = 1)
   ) +
-  scale_fill_viridis_d() +
+  scale_fill_brewer(palette = "Set2") +
   guides(fill = guide_legend(reverse = T)) +
   theme_bw() +
   coord_flip() +
@@ -102,7 +104,7 @@ df %>%
 df %>% 
   ggplot(aes(teacher, time, fill = act)) +
   geom_col(position = "stack", color = "black") +
-  scale_fill_viridis_d() +
+  scale_fill_brewer(palette = "Set2") +
   guides(fill = guide_legend(reverse = T)) +
   scale_y_continuous(
     breaks = seq(0, 80, 10)
@@ -113,6 +115,37 @@ df %>%
   labs(
     x = "Teacher",
     y = "Duration (minutes)",
+    fill = "Activity"
+  )
+```
+
+
+## SFUSD  and JM
+
+```{r}
+df %>% 
+  group_by(curriculum, act) %>% 
+  summarize(
+    time_mean = mean(time)
+  ) %>% 
+  mutate(
+    time_perc = time_mean / sum(time_mean)
+  ) %>% 
+  ungroup() %>% 
+  ggplot(aes(curriculum, time_perc, fill = act)) +
+  geom_col(position = "stack", color = "black") +
+  scale_y_continuous(
+    breaks = seq(0, 1, 0.2),
+    minor_breaks = NULL,
+    labels = scales::percent_format(accuracy = 1)
+  ) +
+  scale_fill_brewer(palette = "Set2") +
+  guides(fill = guide_legend(reverse = T)) +
+  theme_bw() +
+  coord_flip() +
+  labs(
+    x = "Curriculum",
+    y = "Duration (%)",
     fill = "Activity"
   )
 ```
