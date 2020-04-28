@@ -23,62 +23,67 @@ library(readxl)
 ```{r}
 df <-
   tribble(
-    ~school, ~teacher, ~act,                     ~time,
+    ~school, ~teacher, ~act,                     ~time, ~grade,
     
-    "S1",    "T1",     "Warm-up",                4,
-    "S1",    "T1",     "Launch",                 9,
-    "S1",    "T1",     "Work-time (individual)", 24,
-    "S1",    "T1",     "Whole-class discussion", 5,
-    "S1",    "T1",     "Transitions",             3,
+    "S1",    "T1",     "Warm-up",                4,     4,
+    "S1",    "T1",     "Launch",                 9,     4,
+    "S1",    "T1",     "Work-time (individual)", 24,    4,
+    "S1",    "T1",     "Whole-class discussion", 5,     4,
+    "S1",    "T1",     "Transitions",            3,     4,
     
-    "S1",    "T2",     "Warm-up",                2,
-    "S1",    "T2",     "Launch",                 8,
-    "S1",    "T2",     "Work-time (pairs)",      20,
-    "S1",    "T2",     "Whole-class discussion", 13,
-    "S1",    "T2",     "Transitions",             1,
+    "S1",    "T2",     "Warm-up",                2,     3,
+    "S1",    "T2",     "Launch",                 8,     3,
+    "S1",    "T2",     "Work-time (pairs)",      20,    3,
+    "S1",    "T2",     "Whole-class discussion", 13,    3,
+    "S1",    "T2",     "Transitions",             1,    3,
     
-    "S2",    "T1",     "Warm-up",                8,
-    "S2",    "T1",     "Launch",                 5,
-    "S2",    "T1",     "Work-time (pairs)",      14,
-    "S2",    "T1",     "Whole-class discussion", 4,  
-    "S2",    "T1",     "Transitions",             7,
+    "S2",    "T1",     "Warm-up",                8,     1,
+    "S2",    "T1",     "Launch",                 5,     1,
+    "S2",    "T1",     "Work-time (pairs)",      14,    1,
+    "S2",    "T1",     "Whole-class discussion", 4,     1,
+    "S2",    "T1",     "Transitions",             7,    1,
     
-    "S3",    "T2",     "Warm-up",                12,
-    "S3",    "T2",     "Launch",                 11,
-    "S3",    "T2",     "Work-time (pairs)",      17,
-    "S3",    "T2",     "Whole-class discussion", 20,
-    "S3",    "T2",     "Transitions",             4,
+    "S3",    "T2",     "Warm-up",                12,    2,
+    "S3",    "T2",     "Launch",                 11,    2,
+    "S3",    "T2",     "Work-time (pairs)",      17,    2,
+    "S3",    "T2",     "Whole-class discussion", 20,    2,
+    "S3",    "T2",     "Transitions",             4,    2,
     
-    "S3",    "T7",     "Warm-up",                9,
-    "S3",    "T7",     "Launch",                 10,
-    "S3",    "T7",     "Work-time (individual)", 23,
-    "S3",    "T7",     "Whole-class discussion", 29,
-    "S3",    "T7",     "Transitions",             4
+    "S3",    "T7",     "Warm-up",                9,     3,
+    "S3",    "T7",     "Launch",                 10,    3,
+    "S3",    "T7",     "Work-time (individual)", 23,    3,
+    "S3",    "T7",     "Whole-class discussion", 29,    3,
+    "S3",    "T7",     "Transitions",             4,    3
   ) %>%
   bind_rows(
     read_xlsx("data/ml_data.xlsx")
   ) %>%
   arrange(school, teacher) %>%
   mutate(
-    act = act %>% fct_inorder() %>% fct_rev(),
+    act = act %>% factor(levels = c("Warm-up", "Launch", "Work-time (individual)", "Work-time (pairs)", "Whole-class discussion", "Reflection (individual)", "Transitions")) %>% fct_rev(),
+  #  grade = grade %>% factor(levels = c("K", "1", "2", "3", "4", "5", "4/5")),
     teacher = teacher %>% fct_inorder() %>% fct_rev(),
     curriculum = if_else(school == "S3", "Japan Math", "SFUSD")
   )
 ```
 
+## Graphs by grade level
 
+### Percentage time
 
-## Graphs by percentage duration
-
-```{r}
-df %>%
+```{r, fig.asp = 1}
+df %>% 
+  mutate(
+    teacher = teacher %>% fct_reorder2(school, grade)
+  ) %>% 
   group_by(school, teacher) %>%
   mutate(
    time = time / sum(time)
   ) %>%
   ungroup %>%
-  ggplot(aes(teacher, time, fill = act)) +
-  geom_col(position = "stack", color = "black") +
+  ggplot(aes(teacher, time)) +
+  geom_col(aes(fill = act), position = "stack", color = "black") +
+  geom_label(aes(x = teacher, y = 1.3, label = str_c("Grade ", grade)), hjust = 1) +
   scale_y_continuous(
     breaks = seq(0, 1, 0.2),
     minor_breaks = NULL,
@@ -96,18 +101,20 @@ df %>%
   )
 ```
 
+### Total time
 
-
-## Graphs by total duration
-
-```{r}
+```{r, fig.asp = 1}
 df %>% 
-  ggplot(aes(teacher, time, fill = act)) +
-  geom_col(position = "stack", color = "black") +
+  mutate(
+    teacher = teacher %>% fct_reorder2(school, grade)
+  ) %>% 
+  ggplot(aes(teacher, time)) +
+  geom_col(aes(fill = act), position = "stack", color = "black") +
+  geom_label(aes(x = teacher, y = 100, label = str_c("Grade ", grade)), hjust = 1) +
   scale_fill_brewer(palette = "Set2") +
   guides(fill = guide_legend(reverse = T)) +
   scale_y_continuous(
-    breaks = seq(0, 80, 10)
+    breaks = seq(0, 100, 10)
   ) +
   coord_flip() +
   theme_bw() +
@@ -118,7 +125,6 @@ df %>%
     fill = "Activity"
   )
 ```
-
 
 ## SFUSD  and JM
 
@@ -147,6 +153,61 @@ df %>%
   labs(
     x = "Curriculum",
     y = "Duration (%)",
+    fill = "Activity"
+  )
+```
+
+
+
+## Old graphs
+
+### Percentage duration
+
+```{r, fig.asp=1}
+df %>%
+  group_by(school, teacher) %>%
+  mutate(
+   time = time / sum(time)
+  ) %>%
+  ungroup %>%
+  ggplot(aes(teacher, time, fill = act)) +
+  geom_col(position = "stack", color = "black") +
+  scale_y_continuous(
+    breaks = seq(0, 1, 0.2),
+    minor_breaks = NULL,
+    labels = scales::percent_format(accuracy = 1)
+  ) +
+  scale_fill_brewer(palette = "Set2") +
+  guides(fill = guide_legend(reverse = T)) +
+  theme_bw() +
+  coord_flip() +
+  facet_grid(vars(school), scales = "free_y") +
+  labs(
+    x = "Teacher",
+    y = "Duration (%)",
+    fill = "Activity"
+  )
+```
+
+
+
+### Total duration
+
+```{r, fig.asp=1}
+df %>%
+  ggplot(aes(teacher, time, fill = act)) +
+  geom_col(position = "stack", color = "black") +
+  scale_fill_brewer(palette = "Set2") +
+  guides(fill = guide_legend(reverse = T)) +
+  scale_y_continuous(
+    breaks = seq(0, 80, 10)
+  ) +
+  coord_flip() +
+  theme_bw() +
+  facet_grid(vars(school), scales = "free_y") +
+  labs(
+    x = "Teacher",
+    y = "Duration (minutes)",
     fill = "Activity"
   )
 ```
